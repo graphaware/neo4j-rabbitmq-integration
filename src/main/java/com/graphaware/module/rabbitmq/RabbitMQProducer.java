@@ -42,9 +42,10 @@ public class RabbitMQProducer extends BaseThirdPartyWriter {
 
     @Override
     public void start() {
-        LOG.debug("Starting RabbitMQ Producer");
+        LOG.debug("Starting RabbitMQ Producer...");
         super.start();
-        //createChannel();
+        createChannel();
+        LOG.debug("RabbitMQ Producer started.");
     }
 
     @Override
@@ -62,10 +63,9 @@ public class RabbitMQProducer extends BaseThirdPartyWriter {
                     if (!json.equals("")) {
                         byte[] messageBytes = json.getBytes();
                         try {
-                            LOG.debug("Received created node : {}", json);
                             getChannel().basicPublish(exchange, "", null, messageBytes);
                         } catch (IOException e) {
-                            LOG.warn("Unable to publish message");
+                            LOG.warn("Unable to publish message, {}", e.getMessage());
                         }
                     }
                 }
@@ -102,11 +102,10 @@ public class RabbitMQProducer extends BaseThirdPartyWriter {
         factory.setPort(port);
         factory.setVirtualHost(vhost);
         try {
-            Thread.sleep(20000);
             connection = factory.newConnection();
             channel = connection.createChannel();
             channel.exchangeDeclare(exchange, "direct", true);
-        } catch (IOException | TimeoutException | InterruptedException e) {
+        } catch (Exception e) {
             LOG.error("Unable to connect to RabbitMQ");
         }
     }
