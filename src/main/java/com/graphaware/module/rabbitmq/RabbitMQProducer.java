@@ -63,6 +63,7 @@ public class RabbitMQProducer extends BaseThirdPartyWriter {
                     if (!json.equals("")) {
                         byte[] messageBytes = json.getBytes();
                         try {
+                            LOG.debug("Publishing created node {}", json);
                             getChannel().basicPublish(exchange, "", null, messageBytes);
                         } catch (IOException e) {
                             LOG.warn("Unable to publish message, {}", e.getMessage());
